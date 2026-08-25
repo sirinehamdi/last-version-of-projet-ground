@@ -642,9 +642,7 @@
 
                         output.textContent = result.frames.map(frame => {
                             if (selectedParameter === 'all') {
-                                const values = Object.entries(frame.values || {})
-                                    .map(([key, value]) => `${key.toUpperCase()}=${value}`).join(';');
-                                return `[${frame.timestamp}] ${values}\n  Trame: ${frame.raw}`;
+                                return `[${frame.timestamp}] ${frame.raw}`;
                             }
 
                             const parameters = selectedParameter

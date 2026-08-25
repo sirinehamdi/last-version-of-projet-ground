@@ -111,6 +111,7 @@ def send_tc(command, cmd_id="101", seq="000"):
         )
         print("TC envoyée :", frame)
         radio.write(frame.encode())
+        store_satellite_frame(frame, frame_type=decoder.telecommand_type, direction="TX")
         return frame
 
     if communication.type == "wifi" and command_name in {"CAM_ON", "CAM_OFF"}:
@@ -122,7 +123,9 @@ def send_tc(command, cmd_id="101", seq="000"):
             response = requests.get(url, timeout=timeout)
             response.raise_for_status()
             print(f"[AUTO-WIFI] Commande HTTP envoyée: {url}")
-            return f"HTTP {url}"
+            frame = f"HTTP {url}"
+            store_satellite_frame(frame, frame_type=decoder.telecommand_type, direction="TX")
+            return frame
         except Exception as exc:
             raise RuntimeError(
                 f"Aucun port série détecté et commande WiFi impossible: {exc}"
@@ -243,11 +246,13 @@ def decode_tm(frame):
         return None
 
 
-def store_satellite_frame(frame, values):
+def store_satellite_frame(frame, values=None, frame_type="UNKNOWN", direction="RX"):
     satellite_data_history.appendleft({
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
         "raw": frame,
-        "values": values,
+        "values": values or {},
+        "type": frame_type,
+        "direction": direction,
     })
 
 
@@ -331,10 +336,13 @@ def read_radio():
         decoder = FrameDecoder(get_active_satellite().decoder)
         frame_data = decoder.decode_frame(frame)
         if frame_data is None:
+            store_satellite_frame(frame, frame_type="RAW")
             continue
 
+        frame_type = frame_data.get("type") or "UNKNOWN"
         if decoder.is_ack(frame_data):
             print("ACK reçu :", frame)
+            store_satellite_frame(frame, frame_type=frame_type)
             continue
 
         # =========================
@@ -343,9 +351,10 @@ def read_radio():
         values = decode_tm(frame)
 
         if values is None:
+            store_satellite_frame(frame, frame_type=frame_type)
             continue
 
-        store_satellite_frame(frame, values)
+        store_satellite_frame(frame, values=values, frame_type=frame_type)
 
         for key, value in values.items():
             if str(key).strip().lower() != "status":
