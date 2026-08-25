@@ -310,7 +310,7 @@
                                 <i class="icon-arrow-right"></i>
                             </li>
                             <li class="nav-item">
-                                <a href="#">Commandes et logs</a>
+                                <a href="#">Commands and logs</a>
                             </li>
                             <li class="separator">
                                 <i class="icon-arrow-right"></i>
@@ -324,20 +324,20 @@
                             <!-- Commandes satellite (générées depuis satellites.json) -->
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="card-title">Commandes satellite</div>
+                                    <div class="card-title">Satellite commands</div>
                                 </div>
                                 <div class="card-body">
                                     <table class="table table-hover table-scroll">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Commande</th>
-                                                <th scope="col">État</th>
+                                                <th scope="col">Command</th>
+                                                <th scope="col">Status</th>
                                             </tr>
                                         </thead>
 
                                         <tbody id="commandsTableBody">
                                             <tr>
-                                                <td colspan="2">Chargement des commandes...</td>
+                                                <td colspan="2">Loading commands...</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -347,24 +347,24 @@
                             <div class="card telemetry-card">
                                 <div class="card-header">
                                     <div>
-                                        <div class="telemetry-kicker">Télémétrie en direct</div>
-                                        <div class="card-title">Données satellite</div>
+                                        <div class="telemetry-kicker">Live telemetry</div>
+                                        <div class="card-title">Satellite data</div>
                                     </div>
-                                    <div id="satelliteDataMode" class="telemetry-status">Affichage arrêté</div>
+                                    <div id="satelliteDataMode" class="telemetry-status">Display stopped</div>
                                 </div>
                                 <div class="card-body">
                                     <div class="telemetry-control mb-3">
                                         <input id="satelliteParameter" class="form-control" type="text"
-                                            value="all" placeholder="Paramètres : X,TEMP,BAT ou all"
+                                            value="all" placeholder="Parameters: X,TEMP,BAT or all"
                                             onkeydown="if (event.key === 'Enter') loadSatelliteData()">
                                         <div class="form-check form-switch telemetry-switch">
                                             <input id="satelliteDataSwitch" class="form-check-input" type="checkbox"
                                                 role="switch" onchange="toggleSatelliteData(this.checked)">
-                                            <label class="form-check-label" for="satelliteDataSwitch">Afficher</label>
+                                            <label class="form-check-label" for="satelliteDataSwitch">Display</label>
                                         </div>
                                     </div>
                                     <div id="satelliteDataOutput" class="telemetry-output">
-                                        Affichage arrêté. Activez un switch pour lire les données.
+                                        Display stopped. Enable the switch to read data.
                                     </div>
                                 </div>
                             </div>
@@ -377,7 +377,7 @@
                             <!-- terminal -->
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="card-title">Logs de la derniere reponse de commandes </div>
+                                    <div class="card-title">Latest command response logs</div>
                                 </div>
                                 <div class="card-body">
                                     <div id="terminal" style="
@@ -389,7 +389,7 @@
         height:350px;
         overflow-y:auto;
         white-space:pre-wrap; ">
-                                        Logs / Réponses ESP32
+                                        ESP32 logs / responses
                                     </div>
                                 </div>
                             </div>
@@ -397,7 +397,7 @@
 
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="card-title">LOGS (DERNIERS ÉVÉNEMENTS)</div>
+                                    <div class="card-title">LOGS (LATEST EVENTS)</div>
                                 </div>
 
                                 <div class="card-body">
@@ -481,7 +481,7 @@
                         })
                         .catch(error => {
                             button.disabled = false;
-                            status.textContent = `Erreur lors de la capture: ${error.message || error}`;
+                            status.textContent = `Capture error: ${error.message || error}`;
                             console.error("Capture error:", error);
                         });
                 }
@@ -519,7 +519,7 @@
                             status.textContent = data.message || 'IP enregistrée.';
                         })
                         .catch(err => {
-                            status.textContent = 'Erreur lors de l enregistrement de l IP.';
+                            status.textContent = 'Error while saving the IP address.';
                             console.error('ESP32 IP save error:', err);
                         });
                 }
@@ -569,8 +569,8 @@
                     const modeLabel = document.getElementById('satelliteDataMode');
                     const isAll = satelliteDataMode === 'all';
                     modeLabel.textContent = satelliteDataMode
-                        ? `Affichage actif : ${isAll ? 'toutes les données' : satelliteDataMode.toUpperCase()}`
-                    : 'Affichage arrêté.';
+                        ? `Display active: ${isAll ? 'all data' : satelliteDataMode.toUpperCase()}`
+                    : 'Display stopped.';
                 }
 
                 function startSatelliteDataRefresh() {
@@ -623,20 +623,20 @@
                     const requestId = ++satelliteDataRequest;
                     satelliteDataController = new AbortController();
                     const controller = satelliteDataController;
-                    output.textContent = 'Lecture des données...';
+                    output.textContent = 'Reading data...';
 
                     try {
                         const response = await fetch(`/satellite_data?parameter=${encodeURIComponent(selectedParameter)}`, {
                             signal: controller.signal
                         });
                         const result = await response.json();
-                        if (!response.ok) throw new Error(result.error || 'Erreur de lecture');
+                        if (!response.ok) throw new Error(result.error || 'Read error');
                         if (requestId !== satelliteDataRequest || !satelliteDataMode) return;
 
                         if (!result.frames || result.frames.length === 0) {
                             output.textContent = selectedParameter === 'all'
-                                ? 'Aucune donnée satellite reçue.'
-                                : `Aucune trame contenant le paramètre ${selectedParameter}.`;
+                                ? 'No satellite data received.'
+                                : `No frame contains the ${selectedParameter} parameter.`;
                             return;
                         }
 
@@ -659,7 +659,7 @@
                         }).join('\n\n');
                     } catch (error) {
                         if (requestId !== satelliteDataRequest || !satelliteDataMode) return;
-                        output.textContent = `Erreur: ${error.message}`;
+                        output.textContent = `Error: ${error.message}`;
                     } finally {
                         if (satelliteDataController === controller) satelliteDataController = null;
                     }
@@ -674,7 +674,7 @@
                             if (!tbody) return;
 
                             if (data.error || !data.commands || data.commands.length === 0) {
-                                tbody.innerHTML = `<tr><td colspan="2">${data.error || "Aucune commande disponible pour ce satellite."}</td></tr>`;
+                                tbody.innerHTML = `<tr><td colspan="2">${data.error || "No command is available for this satellite."}</td></tr>`;
                                 return;
                             }
 
@@ -698,7 +698,7 @@
                                         <td>${cmd.label}</td>
                                         <td>
                                             <button class="btn btn-primary btn-sm" onclick="sendCommand('${cmd.id}', '${cmd.label}')">
-                                                Envoyer
+                                                Send
                                             </button>
                                         </td>
                                     </tr>
@@ -744,9 +744,9 @@
                         }
 
                         addTerminalLine(label, data.trame, "SUCCESS");
-                        addHistoryLog("CMD", `Commande ${label} envoyée`);
+                        addHistoryLog("CMD", `Command ${label} sent`);
                     } catch (error) {
-                        addTerminalLine(label, "Erreur réseau", "FAIL");
+                        addTerminalLine(label, "Network error", "FAIL");
                     }
                 }
 
@@ -770,9 +770,9 @@
                         }
 
                         addTerminalLine(`${label} ${newState ? "ON" : "OFF"}`, data.trame, "SUCCESS");
-                        addHistoryLog("CMD", `Commande ${label} ${newState ? "ON" : "OFF"} envoyée`);
+                        addHistoryLog("CMD", `Command ${label} ${newState ? "ON" : "OFF"} sent`);
                     } catch (error) {
-                        addTerminalLine(label, "Erreur réseau", "FAIL");
+                        addTerminalLine(label, "Network error", "FAIL");
                         el.checked = !newState;
                     }
                 }

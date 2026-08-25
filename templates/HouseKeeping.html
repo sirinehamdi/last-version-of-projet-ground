@@ -374,22 +374,22 @@
                         <div class="ms-auto" style="min-width: 240px;">
                             <label class="form-label mb-1" for="satelliteSelect">Satellite</label>
                             <select class="form-select form-select-sm" id="satelliteSelect" name="satellite">
-                                <option value="" {% if not active_satellite %}selected{% endif %} disabled>Selectionner un satellite</option>
+                                <option value="" {% if not active_satellite %}selected{% endif %} disabled>Select a satellite</option>
                                 {% for satellite in satellites %}
                                 <option value="{{ satellite.key }}" {% if satellite.key == active_satellite %}selected{% endif %}>{{ satellite.name }}</option>
                                 {% else %}
-                                <option value="" disabled>Aucun profil disponible</option>
+                                <option value="" disabled>No profile available</option>
                                 {% endfor %}
                             </select>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">Parametres actuels</div>
+                            <div class="card-title">Current parameters</div>
                         </div>
                         <div class="card-body">
                             <div id="hkParametersGrid" class="hk-parameters-grid" aria-live="polite">
-                                <p class="hk-empty-state">En attente des donnees de telemetrie.</p>
+                                <p class="hk-empty-state">Waiting for telemetry data.</p>
                             </div>
                         </div>
                     </div>
@@ -397,17 +397,17 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="card-head-row">
-                                <div class="card-title">Graphiques des parametres</div>
+                                <div class="card-title">Parameter charts</div>
                                 <div class="hk-chart-filter">
                                     <input id="hkChartFilter" class="form-control form-control-sm" type="text"
-                                        value="all" placeholder="all ou temp,bat,press"
-                                        aria-label="Filtrer les graphiques par parametre">
+                                        value="all" placeholder="all or temp,bat,press"
+                                        aria-label="Filter charts by parameter">
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
                             <div id="hkChartsGrid" class="hk-charts-grid" aria-live="polite">
-                                <p class="hk-empty-state">Les graphiques apparaitront automatiquement a la reception des parametres.</p>
+                                <p class="hk-empty-state">Charts will appear automatically when parameter data is received.</p>
                             </div>
                         </div>
                     </div>
@@ -434,9 +434,9 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        addTerminalLine("PROFIL", data.message, "ACTIF");
+                        addTerminalLine("PROFILE", data.message, "ACTIVE");
                     } else {
-                        addTerminalLine("PROFIL", data.error || "Erreur", "ECHEC");
+                        addTerminalLine("PROFILE", data.error || "Error", "FAILED");
                     }
                 });
 
@@ -569,7 +569,7 @@
 
                     if (!chartParameterNames.length) {
                         if (!chartsGrid.children.length) {
-                            chartsGrid.innerHTML = '<p class="hk-empty-state">Les graphiques apparaitront automatiquement a la reception des parametres.</p>';
+                            chartsGrid.innerHTML = '<p class="hk-empty-state">Charts will appear automatically when parameter data is received.</p>';
                         }
                         return;
                     }
@@ -597,7 +597,7 @@
                     if (!parameterNames.length) {
                         const emptyState = document.createElement("p");
                         emptyState.className = "hk-empty-state";
-                        emptyState.textContent = "En attente des donnees de telemetrie.";
+                        emptyState.textContent = "Waiting for telemetry data.";
                         parametersGrid.appendChild(emptyState);
                         return;
                     }
@@ -626,7 +626,7 @@
                         liveIndicator.textContent = "LIVE";
                         parameterName.textContent = name;
                         parameterValue.textContent = formatParameterValue(latestValue);
-                        footerLabel.textContent = "Derniere mesure";
+                        footerLabel.textContent = "Latest measurement";
 
                         header.appendChild(liveIndicator);
                         footer.appendChild(footerLabel);

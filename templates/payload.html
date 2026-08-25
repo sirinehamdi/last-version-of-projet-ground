@@ -233,7 +233,7 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="card-title">Etat actuel de la mission </div>
+                                    <div class="card-title">Current mission status</div>
                                 </div>
                                 <div class="card-body">
                                     <div class="container mt-4">
@@ -336,7 +336,7 @@
                         <!-- tableau 2 -->
                         <div class="card">
                             <div class="card-header">
-                                <div class="card-title">Flux camera</div>
+                                <div class="card-title">Camera feed</div>
                             </div>
                             <div class="card-body">
 
@@ -347,18 +347,18 @@
                                         class="form-control form-control-sm d-inline-block" style="width:220px;"
                                         placeholder="192.168.4.1" />
                                     <button id="esp32IpSave" class="btn btn-primary btn-sm ms-2"
-                                        onclick="saveEsp32Ip()">Enregistrer</button>
+                                        onclick="saveEsp32Ip()">Save</button>
                                 </div>
 
                                 <div class="mb-3">
                                     <button id="captureButton" class="btn btn-success btn-sm" onclick="captureImage()">
-                                        Capturer l'image
+                                        Capture image
                                     </button>
                                     <span id="captureStatus" class="ms-3 text-muted"></span>
                                 </div>
 
                                 <div class="text-center mb-3">
-                                    <img id="capturedImage" src="" alt="Image ESP32 capturée"
+                                    <img id="capturedImage" src="" alt="Captured ESP32 image"
                                         style="max-width:100%; border-radius:10px; display:none; cursor:pointer;"
                                         onclick="showInMainArea(this.src)" />
                                 </div>
@@ -435,7 +435,7 @@
         font-size:14px;
         margin-top:8px;
     ">
-                                                La caméra est actuellement désactivée
+                                                The camera is currently disabled
                                             </div>
                                         </div>
 
@@ -447,7 +447,7 @@
         ">
                                             <source src="{{ url_for('static', filename='assets/img/Livevideo.mp4') }}"
                                                 type="video/mp4">
-                                            Votre navigateur ne supporte pas la vidéo.
+                                            Your browser does not support video playback.
                                         </video>
 
                                         <!-- IMAGE CAPTUREE -->
@@ -621,7 +621,7 @@
             const image = document.getElementById("capturedImage");
 
             button.disabled = true;
-            status.textContent = "Capture en cours...";
+            status.textContent = "Capturing image...";
 
             fetch("/capture")
                 .then(response => response.json())
@@ -633,16 +633,16 @@
                         image.src = imageUrl;
                         image.style.display = "block";
                         showInMainArea(imageUrl);
-                        status.textContent = `Image récupérée et enregistrée. ESP32=${data.ip || 'inconnue'}`;
+                        status.textContent = `Image received and saved. ESP32=${data.ip || 'unknown'}`;
                     } else {
                         const errorDetail = data.error ? ` (${data.error})` : '';
-                        const urls = data.attempted_urls ? ` Tentatives: ${data.attempted_urls.join(', ')}` : '';
-                        status.textContent = `${data.message || 'Aucune image reçue.'}${errorDetail}${urls}`;
+                        const urls = data.attempted_urls ? ` Attempts: ${data.attempted_urls.join(', ')}` : '';
+                        status.textContent = `${data.message || 'No image received.'}${errorDetail}${urls}`;
                     }
                 })
                 .catch(error => {
                     button.disabled = false;
-                    status.textContent = `Erreur lors de la capture: ${error.message || error}`;
+                    status.textContent = `Capture error: ${error.message || error}`;
                     console.error("Capture error:", error);
                 });
         }
@@ -666,7 +666,7 @@
 
             const ip = input.value.trim();
             if (!ip) {
-                status.textContent = 'Saisissez une IP ESP32 valide.';
+                status.textContent = 'Enter a valid ESP32 IP address.';
                 return;
             }
 
@@ -677,10 +677,10 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    status.textContent = data.message || 'IP enregistrée.';
+                    status.textContent = data.message || 'IP address saved.';
                 })
                 .catch(err => {
-                    status.textContent = 'Erreur lors de l enregistrement de l IP.';
+                    status.textContent = 'Error while saving the IP address.';
                     console.error('ESP32 IP save error:', err);
                 });
         }
@@ -814,11 +814,11 @@
                 }
 
                 addTerminalLine(id, data.trame, "SUCCESS");
-                addHistoryLog("CMD", `Commande ${id} envoyée`);
+                addHistoryLog("CMD", `Command ${id} sent`);
                 return true;
 
             } catch (error) {
-                addTerminalLine(id, "Erreur réseau", "FAIL");
+                addTerminalLine(id, "Network error", "FAIL");
                 addHistoryLog("ERROR", `${id} - FAIL`);
                 return false;
             }
