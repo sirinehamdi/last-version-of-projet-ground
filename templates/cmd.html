@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- <title>Kaiadmin - Bootstrap 5 Admin Dashboard</title> -->
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+    <link rel="icon" href="static/assets/img/kaiadmin/favicon.ico" type="image/x-icon" />
+
+    <!-- Fonts and icons -->
+    <script src="static/assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+            google: { families: ["Public Sans:300,400,500,600,700"] },
+            custom: {
+                families: [
+                    "Font Awesome 5 Solid",
+                    "Font Awesome 5 Regular",
+                    "Font Awesome 5 Brands",
+                    "simple-line-icons",
+                ],
+                urls: ["static/assets/css/fonts.min.css"],
+            },
+            active: function () {
+                sessionStorage.fonts = true;
+            },
+        });
+    </script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.min.css') }}">
+    <link rel="stylesheet" href="    {{ url_for('static', filename='assets/css/kaiadmin.min.css') }}">
+
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link rel="stylesheet" href=" {{ url_for('static', filename='assets/css/demo.css') }}">
+    <style>
+        .form-check-input {
+            background-color: #ccc;
+            border-color: #ccc;
+            transition: 0.3s;
+        }
+
+        .form-check-input:checked {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+        }
+
+        .table-scroll tbody {
+            display: block;
+            max-height: 200px;
+            /* hauteur du scroll */
+            overflow-y: auto;
+        }
+
+        .table-scroll thead,
+        .table-scroll tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .main-header,
+        .main-panel {
+            width: 100% !important;
+        }
+
+        .main-header {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+
+        .main-panel {
+            float: none !important;
+            padding-top: 70px !important;
+        }
+
+        .wrapper {
+            width: 100% !important;
+        }
+
+        .sat-dashboard {
+            display: flex;
+            gap: 20px;
+            background: #0b1220;
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+        }
+
+        .sat-info {
+            width: 200px;
+        }
+
+        .coord-item {
+            background: #111a2e;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+
+        .sat-map img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+        }
+
+        .topbar-nav .nav-link {
+            color: #000 !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+            background-color: transparent !important;
+        }
+
+        .topbar-nav .nav-link:hover,
+        .topbar-nav .nav-link:focus {
+            color: #d32f2f !important;
+            text-decoration: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .topbar-nav .nav-link.active {
+            color: #d32f2f !important;
+            text-decoration: none !important;
+        }
+
+        .telemetry-card .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .telemetry-kicker {
+            margin: 0 0 4px;
+            color: #6c757d;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .telemetry-card .card-title {
+            margin-bottom: 0;
+        }
+
+        .telemetry-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 9px;
+            border: 1px solid #dee2e6;
+            border-radius: 999px;
+            color: #6c757d;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .telemetry-status::before {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #adb5bd;
+            content: "";
+        }
+
+        .telemetry-control {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .telemetry-control .form-control {
+            min-width: 0;
+            border-color: #ced4da;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .telemetry-switch {
+            flex: 0 0 auto;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .telemetry-output {
+            min-height: 350px;
+            max-height: 350px;
+            padding: 16px;
+            overflow-y: auto;
+            border: 1px solid #202b3c;
+            border-radius: 8px;
+            background: #0b1220;
+            color: #b8f7d4;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.65;
+            white-space: pre-wrap;
+        }
+
+        @media (max-width: 576px) {
+            .telemetry-card .card-header,
+            .telemetry-control {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .telemetry-status {
+                align-self: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- navbar-->
+        <div class="main-panel">
+            <div class="main-header">
+
+                <!-- Navbar Header -->
+                <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+                    <div class="container-fluid">
+                        <nav
+                            class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button type="submit" class="btn btn-search pe-1">
+                                        <i class="fa fa-search search-icon"></i>
+                                    </button>
+                                </div>
+                                <input type="text" placeholder="Search ..." class="form-control" />
+                            </div>
+                        </nav>
+
+                        <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/HK">HK</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/payload">Payload</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/tracking">Tracking</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active text-dark" href="/cmd" style="font-weight:600;">CMD</a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center ms-4 me-3">
+                                <img src="/static/assets/img/Logo_CSU_full_color_96dpi.png" alt="CSU logo"
+                                    style="height:40px; max-height:40px;" class="me-2" />
+                                <img src="/static/assets/img/UPEC_rvb.png" alt="UPEC logo"
+                                    style="height:40px; max-height:40px;" />
+                            </li>
+
+                            <li class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                                    aria-expanded="false" aria-haspopup="true">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-search animated fadeIn">
+                                    <form class="navbar-left navbar-form nav-search">
+                                        <div class="input-group">
+                                            <input type="text" placeholder="Search ..." class="form-control" />
+                                        </div>
+                                    </form>
+                                </ul>
+                            </li>
+
+
+
+                        </ul>
+                    </div>
+                </nav>
+                <!-- End Navbar -->
+            </div>
+            <!-- end navbar -->
+
+
+            <div>
+                <div class="page-inner">
+                    <div class="page-header">
+
+                        <ul class="breadcrumbs mb-3">
+                            <li class="nav-home">
+                                <a href="#">
+                                    <i class="icon-home"></i>
+                                </a>
+                            </li>
+                            <li class="separator">
+                                <i class="icon-arrow-right"></i>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#">Commandes et logs</a>
+                            </li>
+                            <li class="separator">
+                                <i class="icon-arrow-right"></i>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="row">
+                        <!-- start partie 2 -->
+                        <div class="col-md-8">
+                            <!-- Commandes satellite (générées depuis satellites.json) -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Commandes satellite</div>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-hover table-scroll">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Commande</th>
+                                                <th scope="col">État</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody id="commandsTableBody">
+                                            <tr>
+                                                <td colspan="2">Chargement des commandes...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card telemetry-card">
+                                <div class="card-header">
+                                    <div>
+                                        <div class="telemetry-kicker">Télémétrie en direct</div>
+                                        <div class="card-title">Données satellite</div>
+                                    </div>
+                                    <div id="satelliteDataMode" class="telemetry-status">Affichage arrêté</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="telemetry-control mb-3">
+                                        <input id="satelliteParameter" class="form-control" type="text"
+                                            value="all" placeholder="Paramètres : X,TEMP,BAT ou all"
+                                            onkeydown="if (event.key === 'Enter') loadSatelliteData()">
+                                        <div class="form-check form-switch telemetry-switch">
+                                            <input id="satelliteDataSwitch" class="form-check-input" type="checkbox"
+                                                role="switch" onchange="toggleSatelliteData(this.checked)">
+                                            <label class="form-check-label" for="satelliteDataSwitch">Afficher</label>
+                                        </div>
+                                    </div>
+                                    <div id="satelliteDataOutput" class="telemetry-output">
+                                        Affichage arrêté. Activez un switch pour lire les données.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                        
+                        <!-- end partie 2 -->
+                        <!-- start partie 3 -->
+                        <div class="col-md-4">
+                            <!-- terminal -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Logs de la derniere reponse de commandes </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="terminal" style="
+        background-color:#000;
+        color:#00ff00;
+        padding:15px;
+        border-radius:5px;
+        font-family:monospace;
+        height:350px;
+        overflow-y:auto;
+        white-space:pre-wrap; ">
+                                        Logs / Réponses ESP32
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- end terminal -->
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">LOGS (DERNIERS ÉVÉNEMENTS)</div>
+                                </div>
+
+                                <div class="card-body">
+
+                                    <div id="logsContainer" style="
+    background:#0b1220;
+    padding:15px;
+    border-radius:8px;
+    max-height:320px;
+    overflow-y:auto;
+    font-family:Arial;
+    color:white;
+  ">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <!-- end partie 3 -->
+                    </div>
+                </div>
+            </div>
+
+
+
+            <script>
+
+
+
+                function updateTimeline(status) {
+
+                    document.querySelectorAll(".item").forEach(item => {
+                        item.classList.remove("active");
+                    });
+
+                    const current = document.getElementById("step-" + status);
+
+                    if (current) {
+                        current.classList.add("active");
+                    }
+                }
+
+                setInterval(() => {
+
+                    fetch("/status")
+                        .then(res => res.json())
+                        .then(data => {
+
+                            updateTimeline(data.status);
+
+                        });
+
+                }, 2000);
+
+                function captureImage() {
+                    const button = document.getElementById("captureButton");
+                    const status = document.getElementById("captureStatus");
+                    const image = document.getElementById("capturedImage");
+
+                    button.disabled = true;
+                    status.textContent = "Capture en cours...";
+
+                    fetch("/capture")
+                        .then(response => response.json())
+                        .then(data => {
+                            button.disabled = false;
+
+                            if (data.saved_image) {
+                                const imageUrl = data.image_url || `/static/img/esp32/${data.saved_image}`;
+                                image.src = imageUrl;
+                                image.style.display = "block";
+                                showInMainArea(imageUrl);
+                                status.textContent = `Image récupérée et enregistrée. ESP32=${data.ip || 'inconnue'}`;
+                            } else {
+                                const errorDetail = data.error ? ` (${data.error})` : '';
+                                const urls = data.attempted_urls ? ` Tentatives: ${data.attempted_urls.join(', ')}` : '';
+                                status.textContent = `${data.message || 'Aucune image reçue.'}${errorDetail}${urls}`;
+                            }
+                        })
+                        .catch(error => {
+                            button.disabled = false;
+                            status.textContent = `Erreur lors de la capture: ${error.message || error}`;
+                            console.error("Capture error:", error);
+                        });
+                }
+
+                function loadEsp32Ip() {
+                    fetch('/esp32_ip')
+                        .then(response => response.json())
+                        .then(data => {
+                            const input = document.getElementById('esp32IpInput');
+                            if (input && data.ip) {
+                                input.value = data.ip;
+                            }
+                        })
+                        .catch(err => console.warn('Impossible de charger l IP ESP32', err));
+                }
+
+                function saveEsp32Ip() {
+                    const input = document.getElementById('esp32IpInput');
+                    const status = document.getElementById('captureStatus');
+                    if (!input) return;
+
+                    const ip = input.value.trim();
+                    if (!ip) {
+                        status.textContent = 'Saisissez une IP ESP32 valide.';
+                        return;
+                    }
+
+                    fetch('/esp32_ip', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ip })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            status.textContent = data.message || 'IP enregistrée.';
+                        })
+                        .catch(err => {
+                            status.textContent = 'Erreur lors de l enregistrement de l IP.';
+                            console.error('ESP32 IP save error:', err);
+                        });
+                }
+
+                function showInMainArea(src) {
+                    if (!src) return;
+                    const mainImg = document.getElementById('mainCapturedImage');
+                    const video = document.getElementById('mainLiveVideo');
+                    if (mainImg && video) {
+                        mainImg.src = src;
+                        mainImg.style.display = 'block';
+                        video.style.display = 'none';
+                    }
+                }
+
+                function hideMainImage() {
+                    const mainImg = document.getElementById('mainCapturedImage');
+                    const video = document.getElementById('mainLiveVideo');
+                    if (mainImg && video) {
+                        mainImg.style.display = 'none';
+                        video.style.display = '';
+                    }
+                }
+
+                window.addEventListener('DOMContentLoaded', () => {
+                    loadEsp32Ip();
+                });
+                window.addEventListener('DOMContentLoaded', () => {
+                    loadEsp32Ip();
+                    loadCommands();
+
+                    fetch("/logs")
+                        .then(r => r.json())
+                        .then(data => {
+                            data.forEach(log => {
+                                addHistoryLog(log.type, log.message);
+                            });
+                        });
+                });
+
+                let satelliteDataMode = null;
+                let satelliteDataTimer = null;
+                let satelliteDataRequest = 0;
+                let satelliteDataController = null;
+
+                function updateSatelliteDataModeLabel() {
+                    const modeLabel = document.getElementById('satelliteDataMode');
+                    const isAll = satelliteDataMode === 'all';
+                    modeLabel.textContent = satelliteDataMode
+                        ? `Affichage actif : ${isAll ? 'toutes les données' : satelliteDataMode.toUpperCase()}`
+                    : 'Affichage arrêté.';
+                }
+
+                function startSatelliteDataRefresh() {
+                    if (satelliteDataTimer === null) {
+                        satelliteDataTimer = setInterval(refreshSatelliteData, 2000);
+                    }
+                }
+
+                function stopSatelliteData() {
+                    if (satelliteDataTimer !== null) {
+                        clearInterval(satelliteDataTimer);
+                        satelliteDataTimer = null;
+                    }
+                    satelliteDataMode = null;
+                    satelliteDataRequest += 1;
+                    if (satelliteDataController) {
+                        satelliteDataController.abort();
+                        satelliteDataController = null;
+                    }
+                    document.getElementById('satelliteDataSwitch').checked = false;
+                    document.getElementById('satelliteParameter').value = 'all';
+                    updateSatelliteDataModeLabel();
+                }
+
+                function toggleSatelliteData(enabled) {
+                    if (!enabled) {
+                        stopSatelliteData();
+                        return;
+                    }
+
+                    const input = document.getElementById('satelliteParameter');
+                    satelliteDataMode = input.value.trim().toLowerCase() || 'all';
+                    input.value = satelliteDataMode;
+                    updateSatelliteDataModeLabel();
+                    startSatelliteDataRefresh();
+                    refreshSatelliteData();
+                }
+
+                function loadSatelliteData() {
+                    const dataSwitch = document.getElementById('satelliteDataSwitch');
+                    dataSwitch.checked = true;
+                    toggleSatelliteData(true);
+                }
+
+                async function refreshSatelliteData() {
+                    const output = document.getElementById('satelliteDataOutput');
+                    if (!output || !satelliteDataMode) return;
+
+                    const selectedParameter = satelliteDataMode;
+                    const requestId = ++satelliteDataRequest;
+                    satelliteDataController = new AbortController();
+                    const controller = satelliteDataController;
+                    output.textContent = 'Lecture des données...';
+
+                    try {
+                        const response = await fetch(`/satellite_data?parameter=${encodeURIComponent(selectedParameter)}`, {
+                            signal: controller.signal
+                        });
+                        const result = await response.json();
+                        if (!response.ok) throw new Error(result.error || 'Erreur de lecture');
+                        if (requestId !== satelliteDataRequest || !satelliteDataMode) return;
+
+                        if (!result.frames || result.frames.length === 0) {
+                            output.textContent = selectedParameter === 'all'
+                                ? 'Aucune donnée satellite reçue.'
+                                : `Aucune trame contenant le paramètre ${selectedParameter}.`;
+                            return;
+                        }
+
+                        output.textContent = result.frames.map(frame => {
+                            if (selectedParameter === 'all') {
+                                const values = Object.entries(frame.values || {})
+                                    .map(([key, value]) => `${key.toUpperCase()}=${value}`).join(';');
+                                return `[${frame.timestamp}] ${values}\n  Trame: ${frame.raw}`;
+                            }
+
+                            const parameters = selectedParameter
+                                .split(/[;,]/)
+                                .map(item => item.trim().toLowerCase())
+                                .filter(Boolean);
+                            const values = parameters
+                                .filter(key => Object.prototype.hasOwnProperty.call(frame.values || {}, key))
+                                .map(key => `${key.toUpperCase()}=${frame.values[key]}`)
+                                .join(';');
+                            return `[${frame.timestamp}] ${values}`;
+                        }).join('\n\n');
+                    } catch (error) {
+                        if (requestId !== satelliteDataRequest || !satelliteDataMode) return;
+                        output.textContent = `Erreur: ${error.message}`;
+                    } finally {
+                        if (satelliteDataController === controller) satelliteDataController = null;
+                    }
+                }
+
+                // Charge les commandes du satellite actif (id + label définis dans satellites.json)
+                function loadCommands() {
+                    fetch("/commands")
+                        .then(r => r.json())
+                        .then(data => {
+                            const tbody = document.getElementById("commandsTableBody");
+                            if (!tbody) return;
+
+                            if (data.error || !data.commands || data.commands.length === 0) {
+                                tbody.innerHTML = `<tr><td colspan="2">${data.error || "Aucune commande disponible pour ce satellite."}</td></tr>`;
+                                return;
+                            }
+
+                            tbody.innerHTML = data.commands.map((cmd, i) => {
+                                if (cmd.on_id && cmd.off_id) {
+                                    return `
+                                        <tr>
+                                            <td>${cmd.label}</td>
+                                            <td>
+                                                <div class="form-check form-switch">
+                                                    <input id="cmdSwitch${i}" class="form-check-input" type="checkbox"
+                                                        data-on-id="${cmd.on_id}"
+                                                        role="switch" onchange="sendToggleCommand('${cmd.on_id}', '${cmd.off_id}', '${cmd.label}', this)">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }
+                                return `
+                                    <tr>
+                                        <td>${cmd.label}</td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" onclick="sendCommand('${cmd.id}', '${cmd.label}')">
+                                                Envoyer
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join("");
+
+                            syncToggleStates();
+                        })
+                        .catch(err => console.warn("Impossible de charger les commandes", err));
+                }
+
+                async function syncToggleStates() {
+                    const switches = document.querySelectorAll("input[data-on-id]");
+
+                    await Promise.all([...switches].map(async (toggle) => {
+                        try {
+                            const response = await fetch(
+                                `/command_state/${encodeURIComponent(toggle.dataset.onId)}`
+                            );
+                            if (!response.ok) return;
+
+                            const state = await response.json();
+                            toggle.checked = state.on === true;
+                        } catch (error) {
+                            console.warn("Impossible de synchroniser une commande :", error);
+                        }
+                    }));
+                }
+
+                // Commande simple sans état (ex: RESET, STATUS) : un bouton qui envoie l'id une seule fois
+                async function sendCommand(id, label) {
+                    try {
+                        const response = await fetch('/send_command', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id })
+                        });
+                        const data = await response.json();
+
+                        if (data.error) {
+                            addTerminalLine(label, data.error, "FAIL");
+                            return;
+                        }
+
+                        addTerminalLine(label, data.trame, "SUCCESS");
+                        addHistoryLog("CMD", `Commande ${label} envoyée`);
+                    } catch (error) {
+                        addTerminalLine(label, "Erreur réseau", "FAIL");
+                    }
+                }
+
+                // Commande à 2 états (ex: CAM_ON/CAM_OFF, epsOn/epsOff) : un seul switch par sous-système,
+                // envoie on_id si activé, off_id si désactivé, et ne reste dans un état que si la commande a réussi
+                async function sendToggleCommand(onId, offId, label, el) {
+                    const newState = el.checked;
+                    const id = newState ? onId : offId;
+                    try {
+                        const response = await fetch('/send_command', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id })
+                        });
+                        const data = await response.json();
+
+                        if (data.error) {
+                            addTerminalLine(label, data.error, "FAIL");
+                            el.checked = !newState; // échec : le switch revient à son état réel précédent
+                            return;
+                        }
+
+                        addTerminalLine(`${label} ${newState ? "ON" : "OFF"}`, data.trame, "SUCCESS");
+                        addHistoryLog("CMD", `Commande ${label} ${newState ? "ON" : "OFF"} envoyée`);
+                    } catch (error) {
+                        addTerminalLine(label, "Erreur réseau", "FAIL");
+                        el.checked = !newState;
+                    }
+                }
+
+
+
+                function addTerminalLine(command, response, status, color = "#00ff00") {
+
+                    let terminal = document.getElementById("terminal");
+
+                    let now = new Date();
+                    let time = now.toLocaleTimeString('fr-FR');
+
+                    terminal.innerHTML = `
+<div style="font-family:monospace; line-height:1.2; margin:0; padding:5px;">
+
+<div><b>Cmd:</b> ${command} <span style="float:right;">${time}</span></div>
+
+<div><b>Rep:</b> ${response}</div>
+
+<div><b>Stat:</b> ${status}</div>
+
+<hr style="border:0;border-top:1px solid #333;margin:4px 0;">
+
+</div>
+`;
+
+                }
+
+                function addHistoryLog(type, message) {
+
+                    let container = document.getElementById("logsContainer");
+
+                    let now = new Date();
+                    let time = now.toLocaleTimeString('fr-FR');
+
+                    let badgeColor = "#1e90ff";
+
+                    if (type === "CMD")
+                        badgeColor = "#7b5cff";
+
+                    if (type === "WARN")
+                        badgeColor = "#f1c40f";
+
+                    if (type === "ERROR")
+                        badgeColor = "red";
+
+                    container.innerHTML += `
+        <div style="display:flex;align-items:center;margin-bottom:6px;">
+
+            <span style="width:80px;color:#b0b0b0;font-size:12px;">
+                ${time}
+            </span>
+
+            <span style="
+                background:${badgeColor};
+                color:white;
+                padding:2px 6px;
+                border-radius:3px;
+                font-size:10px;
+                margin-right:8px;
+            ">
+                ${type}
+            </span>
+
+            <span style="color:#cfd8dc;">
+                ${message}
+            </span>
+
+        </div>
+    `;
+
+                    container.scrollTop = container.scrollHeight;
+                }
+
+
+                async function updatePosition() {
+
+                    try {
+
+                        const response = await fetch("/position");
+                        const data = await response.json();
+
+                        const latitudeEl = document.getElementById("latitude");
+                        const longitudeEl = document.getElementById("longitude");
+
+                        if (latitudeEl) {
+                            latitudeEl.textContent = data && data.latitude !== undefined ? data.latitude : "--";
+                        }
+
+                        if (longitudeEl) {
+                            longitudeEl.textContent = data && data.longitude !== undefined ? data.longitude : "--";
+                        }
+
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+
+                setInterval(updatePosition, 2000);
+                updatePosition();
+            </script>
+        </div>
+    </div>
+
+    </div>
+    </div>
+
+
+    </div>
+
+    <!-- Custom template | don't include it in your project! -->
+
+    <!-- End Custom template -->
+    </div>
+    <!--   Core JS Files   -->
+    <script src="static/assets/js/core/jquery-3.7.1.min.js"></script>
+    <script src="static/assets/js/core/popper.min.js"></script>
+    <script src="static/assets/js/core/bootstrap.min.js"></script>
+
+    <!-- jQuery Scrollbar -->
+    <script src="static/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+
+    <!-- Chart JS -->
+    <script src="static/assets/js/plugin/chart.js/chart.min.js"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="static/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+
+    <!-- Chart Circle -->
+    <script src="static/assets/js/plugin/chart-circle/circles.min.js"></script>
+
+    <!-- Datatables -->
+    <script src="static/assets/js/plugin/datatables/datatables.min.js"></script>
+
+    <!-- Bootstrap Notify -->
+    <script src="static/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+
+    <!-- jQuery Vector Maps -->
+    <script src="static/assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+    <script src="static/assets/js/plugin/jsvectormap/world.js"></script>
+
+    <!-- Sweet Alert -->
+    <script src="static/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+
+    <!-- Kaiadmin JS -->
+    <script src="static/assets/js/kaiadmin.min.js"></script>
+
+    <!-- Kaiadmin DEMO methods, don't include it in your project! -->
+    <script src="static/assets/js/setting-demo.js"></script>
+    <script src="static/assets/js/demo.js"></script>
+    <script>
+        $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+            type: "line",
+            height: "70",
+            width: "100%",
+            lineWidth: "2",
+            lineColor: "#177dff",
+            fillColor: "rgba(23, 125, 255, 0.14)",
+        });
+
+        $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+            type: "line",
+            height: "70",
+            width: "100%",
+            lineWidth: "2",
+            lineColor: "#f3545d",
+            fillColor: "rgba(243, 84, 93, .14)",
+        });
+
+        $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+            type: "line",
+            height: "70",
+            width: "100%",
+            lineWidth: "2",
+            lineColor: "#ffa534",
+            fillColor: "rgba(255, 165, 52, .14)",
+        });
+    </script>
+</body>
+
+</html>

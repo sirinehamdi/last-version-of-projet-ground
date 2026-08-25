@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- <title>Kaiadmin - Bootstrap 5 Admin Dashboard</title> -->
+    <meta
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <link
+      rel="icon"
+      href="static/assets/img/kaiadmin/favicon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- Fonts and icons -->
+    <script src="static/assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+      WebFont.load({
+        google: { families: ["Public Sans:300,400,500,600,700"] },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["static/assets/css/fonts.min.css"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
+
+    <!-- CSS Files -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href= "{{ url_for('static', filename='assets/css/plugins.min.css') }}">
+    <link rel="stylesheet" href="    {{ url_for('static', filename='assets/css/kaiadmin.min.css') }}" >
+
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link rel="stylesheet" href=" {{ url_for('static', filename='assets/css/demo.css') }}">
+    <style>
+      .form-check-input {
+  background-color: #ccc;
+  border-color: #ccc;
+  transition: 0.3s;
+}
+
+.form-check-input:checked {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+}
+      .table-scroll tbody {
+  display: block;
+  max-height: 200px; /* hauteur du scroll */
+  overflow-y: auto;
+}
+
+.table-scroll thead,
+.table-scroll tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+      .main-header, .main-panel {
+        width: 100% !important;
+      }
+      .main-header {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1001;
+      }
+      .main-panel {
+        float: none !important;
+        padding-top: 70px !important;
+      }
+      .wrapper {
+        width: 100% !important;
+      }
+      .sat-dashboard{
+  display:flex;
+  gap:20px;
+  background:#0b1220;
+  padding:20px;
+  border-radius:15px;
+  color:white;
+}
+
+.sat-info{
+  width:200px;
+}
+
+.coord-item{
+  background:#111a2e;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+.label{
+  font-size:12px;
+  color:#aaa;
+}
+
+.value{
+  font-size:16px;
+  font-weight:bold;
+  color:#4cc9f0;
+}
+
+.sat-map img{
+  width:100%;
+  max-width:400px;
+  border-radius:12px;
+}
+      .topbar-nav .nav-link {
+        color: #000 !important;
+        font-weight: 700 !important;
+        text-decoration: none !important;
+        background-color: transparent !important;
+      }
+      .topbar-nav .nav-link:hover,
+      .topbar-nav .nav-link:focus {
+        color: #d32f2f !important;
+        text-decoration: none !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+      }
+      .topbar-nav .nav-link.active {
+        color: #d32f2f !important;
+        text-decoration: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+<!-- navbar-->
+      <div class="main-panel">
+        <div class="main-header">
+         
+          <!-- Navbar Header -->
+          <nav
+            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
+          >
+            <div class="container-fluid">
+              <nav
+                class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button type="submit" class="btn btn-search pe-1">
+                      <i class="fa fa-search search-icon"></i>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search ..."
+                    class="form-control"
+                  />
+                </div>
+              </nav>
+
+              <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                <li class="nav-item">
+                  <a class="nav-link" href="/HK">HK</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/payload">Payload</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/tracking">Tracking</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/cmd">CMD</a>
+                </li>
+                <li
+                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
+                >
+                  <a
+                    class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    role="button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                  >
+                    <i class="fa fa-search"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-search animated fadeIn">
+                    <form class="navbar-left navbar-form nav-search">
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          placeholder="Search ..."
+                          class="form-control"
+                        />
+                      </div>
+                    </form>
+                  </ul>
+                </li>
+                <li class="nav-item topbar-icon dropdown hidden-caret">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="messageDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <i class="fa fa-envelope"></i>
+                  </a>
+                  <ul
+                    class="dropdown-menu messages-notif-box animated fadeIn"
+                    aria-labelledby="messageDropdown"
+                  >
+                    <li>
+                      <div
+                        class="dropdown-title d-flex justify-content-between align-items-center"
+                      >
+                        Messages
+                        <a href="#" class="small">Mark all as read</a>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="message-notif-scroll scrollbar-outer">
+                        <div class="notif-center">
+                          <a href="#">
+                            <div class="notif-img">
+                              <img
+                                src="static/assets/img/jm_denis.jpg"
+                                alt="Img Profile"
+                              />
+                            </div>
+                            <div class="notif-content">
+                              <span class="subject">Jimmy Denis</span>
+                              <span class="block"> How are you ? </span>
+                              <span class="time">5 minutes ago</span>
+                            </div>
+                          </a>
+                          <a href="#">
+                            <div class="notif-img">
+                              <img
+                                src="static/assets/img/chadengle.jpg"
+                                alt="Img Profile"
+                              />
+                            </div>
+                            <div class="notif-content">
+                              <span class="subject">Chad</span>
+                              <span class="block"> Ok, Thanks ! </span>
+                              <span class="time">12 minutes ago</span>
+                            </div>
+                          </a>
+                          <a href="#">
+                            <div class="notif-img">
+                              <img
+                                src="static/assets/img/mlane.jpg"
+                                alt="Img Profile"
+                              />
+                            </div>
+                            <div class="notif-content">
+                              <span class="subject">Jhon Doe</span>
+                              <span class="block">
+                                Ready for the meeting today...
+                              </span>
+                              <span class="time">12 minutes ago</span>
+                            </div>
+                          </a>
+                          <a href="#">
+                            <div class="notif-img">
+                              <img
+                                src="static/assets/img/talha.jpg"
+                                alt="Img Profile"
+                              />
+                            </div>
+                            <div class="notif-content">
+                              <span class="subject">Talha</span>
+                              <span class="block"> Hi, Apa Kabar ? </span>
+                              <span class="time">17 minutes ago</span>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <a class="see-all" href="javascript:void(0);"
+                        >See all messages<i class="fa fa-angle-right"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item topbar-icon dropdown hidden-caret">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="notifDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <i class="fa fa-bell"></i>
+                    <span class="notification">4</span>
+                  </a>
+                  <ul
+                    class="dropdown-menu notif-box animated fadeIn"
+                    aria-labelledby="notifDropdown"
+                  >
+                    <li>
+                      <div class="dropdown-title">
+                        You have 4 new notification
+                      </div>
+                    </li>
+                    <li>
+                      <div class="notif-scroll scrollbar-outer">
+                        <div class="notif-center">
+                          <a href="#">
+                            <div class="notif-icon notif-primary">
+                              <i class="fa fa-user-plus"></i>
+                            </div>
+                            <div class="notif-content">
+                              <span class="block"> New user registered </span>
+                              <span class="time">5 minutes ago</span>
+                            </div>
+                          </a>
+                          <a href="#">
+                            <div class="notif-icon notif-success">
+                              <i class="fa fa-comment"></i>
+                            </div>
+                            <div class="notif-content">
+                              <span class="block">
+                                Rahmad commented on Admin
+                              </span>
+                              <span class="time">12 minutes ago</span>
+                            </div>
+                          </a>
+                          <a href="#">
+                            <div class="notif-img">
+                              <img
+                                src="static/assets/img/profile2.jpg"
+                                alt="Img Profile"
+                              />
+                            </div>
+                            <div class="notif-content">
+                              <span class="block">
+                                Reza send messages to you
+                              </span>
+                              <span class="time">12 minutes ago</span>
+                            </div>
+                          </a>
+                          <a href="#">
+                            <div class="notif-icon notif-danger">
+                              <i class="fa fa-heart"></i>
+                            </div>
+                            <div class="notif-content">
+                              <span class="block"> Farrah liked Admin </span>
+                              <span class="time">17 minutes ago</span>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <a class="see-all" href="javascript:void(0);"
+                        >See all notifications<i class="fa fa-angle-right"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item topbar-icon dropdown hidden-caret">
+                  <a
+                    class="nav-link"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                    <i class="fas fa-layer-group"></i>
+                  </a>
+                  <div class="dropdown-menu quick-actions animated fadeIn">
+                    <div class="quick-actions-header">
+                      <span class="title mb-1">Quick Actions</span>
+                      <span class="subtitle op-7">Shortcuts</span>
+                    </div>
+                    <div class="quick-actions-scroll scrollbar-outer">
+                      <div class="quick-actions-items">
+                        <div class="row m-0">
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div class="avatar-item bg-danger rounded-circle">
+                                <i class="far fa-calendar-alt"></i>
+                              </div>
+                              <span class="text">Calendar</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-warning rounded-circle"
+                              >
+                                <i class="fas fa-map"></i>
+                              </div>
+                              <span class="text">Maps</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div class="avatar-item bg-info rounded-circle">
+                                <i class="fas fa-file-excel"></i>
+                              </div>
+                              <span class="text">Reports</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-success rounded-circle"
+                              >
+                                <i class="fas fa-envelope"></i>
+                              </div>
+                              <span class="text">Emails</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-primary rounded-circle"
+                              >
+                                <i class="fas fa-file-invoice-dollar"></i>
+                              </div>
+                              <span class="text">Invoice</span>
+                            </div>
+                          </a>
+                          <a class="col-6 col-md-4 p-0" href="#">
+                            <div class="quick-actions-item">
+                              <div
+                                class="avatar-item bg-secondary rounded-circle"
+                              >
+                                <i class="fas fa-credit-card"></i>
+                              </div>
+                              <span class="text">Payments</span>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="nav-item topbar-user dropdown hidden-caret">
+                  <a
+                    class="dropdown-toggle profile-pic"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+             
+                  </a>
+                  <ul class="dropdown-menu dropdown-user animated fadeIn">
+                    <div class="dropdown-user-scroll scrollbar-outer">
+                      <li>
+                        <div class="user-box">
+                          <div class="avatar-lg">
+                            <img
+                              src="static/assets/img/profile.jpg"
+                              alt="image profile"
+                              class="avatar-img rounded"
+                            />
+                          </div>
+                          <div class="u-text">
+                            <h4>Hizrian</h4>
+                            <p class="text-muted">hello@example.com</p>
+                            <a
+                              href="profile.html"
+                              class="btn btn-xs btn-secondary btn-sm"
+                              >View Profile</a
+                            >
+                          </div>
+                        </div>
+                      </li>
+                      <li>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">My Profile</a>
+                        <a class="dropdown-item" href="#">My Balance</a>
+                        <a class="dropdown-item" href="#">Inbox</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Account Setting</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Logout</a>
+                      </li>
+                    </div>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <!-- End Navbar -->
+        </div>
+    <!-- end navbar -->
+
+
+           <div >
+          <div class="page-inner">
+            <div class="page-header">
+              <h3 class="fw-bold mb-3">Tables</h3>
+              <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                  <a href="#">
+                    <i class="icon-home"></i>
+                  </a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                  <a href="#">Tables</a>
+                </li>
+                <li class="separator">
+                  <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                  <a href="#">Basic Tables</a>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="col-md-12"> <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Etat actuel de la mission </div>
+                  </div>
+                  <div class="card-body">
+                 <div class="container mt-4">
+<div class="timeline">
+
+  <div class="item" id="step-0">
+    <div class="dot"></div>
+    <div class="line"></div>
+    <div class="step-label">ON</div>
+  </div>
+
+  <div class="item" id="step-1">
+    <div class="dot"></div>
+    <div class="line"></div>
+    <div class="step-label">Init</div>
+  </div>
+
+  <div class="item" id="step-2">
+    <div class="dot"></div>
+    <div class="line"></div>
+    <div class="step-label">Deploy</div>
+  </div>
+
+  <div class="item" id="step-3">
+    <div class="dot"></div>
+    <div class="line"></div>
+    <div class="step-label">Commi</div>
+  </div>
+
+  <div class="item" id="step-4">
+    <div class="dot"></div>
+    <div class="line"></div>
+    <div class="step-label">Mission</div>
+  </div>
+
+  <div class="item" id="step-5">
+    <div class="dot"></div>
+    <div class="step-label">End</div>
+  </div>
+
+</div>
+<style>.timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 10px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ccc;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #ddd;
+}
+
+.line {
+  flex: 1;
+  height: 4px;
+  background: #ddd;
+  margin: 0 10px;
+  border-radius: 10px;
+}
+
+.step-label {
+  position: absolute;
+  top: 30px;
+  font-size: 13px;
+  color: #777;
+}
+
+.item.active .dot {
+  background: #28a745;
+  box-shadow: 0 0 10px rgba(40,167,69,0.5);
+}
+
+.item.active .step-label {
+  color: #28a745;
+  font-weight: bold;
+}</style>
+</div>
+                  </div>
+                </div></div>
+              <!-- ----------------------------------------------------------------------------------------------- -->
+               <!-- start partie 1 -->
+              <div class="col-md-4">
+                <!-- statisticsChart -->
+                 <div class="card">
+                  <div class="card-header">
+                    <div class="card-head-row">
+                      <div class="card-title">Donnees capteurs</div>
+                      <div class="card-tools">
+                       <a href="#" id="btnExport" class="btn btn-label-success btn-round btn-sm me-2">
+                          <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                          </span>
+                          Autre
+                        </a>
+                        <a href="#" class="btn btn-label-info btn-round btn-sm">
+                          <span class="btn-label">
+                            <i class="fa fa-print"></i>
+                          </span>
+                          Print
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container" style="min-height: 375px">
+                      <canvas id="statisticsChart"></canvas>
+                      
+                      <!-- <canvas id="batteryChart" style="display:none;"></canvas> -->
+
+                    </div>
+                 
+                     <div></div>
+                  </div>
+                </div>
+                <!-- end statisticsChart -->
+                <!-- batteryChart -->
+               <div class="card">
+                  <div class="card-header">
+                    <div class="card-head-row">
+                      <div class="card-title">Donnees capteurs</div>
+                      <div class="card-tools">
+                       <a href="#" id="btnExport" class="btn btn-label-success btn-round btn-sm me-2">
+                          <span class="btn-label">
+                            <i class="fa fa-pencil"></i>
+                          </span>
+                          Autre
+                        </a>
+                        <a href="#" class="btn btn-label-info btn-round btn-sm">
+                          <span class="btn-label">
+                            <i class="fa fa-print"></i>
+                          </span>
+                          Print
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container" style="min-height: 375px">
+                      <canvas id="batteryChart"></canvas>
+                      
+                      <!-- <canvas id="batteryChart" style="display:none;"></canvas> -->
+
+                    </div>
+                 
+                     <div></div>
+                  </div>
+                </div>
+                <!-- end batteryChart -->
+                 
+              </div>
+               <!-- end partie 1 -->
+                <!-- ------------------------------------------------------------------------------------------ -->
+              <!-- start partie 2 -->
+              <div class="col-md-4">
+                <!-- Instruments STATUT -->
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">État des instruments</div>
+                  </div>
+                  <div class="card-body">
+                   <table class="table table-hover table-scroll">
+  <thead>
+    <tr>
+      <th scope="col">Instrument</th>
+      <th scope="col">État</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+  <td>Camera</td>
+  <td>
+    <div class="form-check form-switch">
+      <input id="cameraSwitch"
+             class="form-check-input"
+             type="checkbox"
+             role="switch"
+             onchange="toggleCamera(this)">
+    </div>
+  </td>
+</tr>
+
+    <tr>
+      <td>EPS</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr>
+
+    <!-- <tr>
+      <td>THM</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr> -->
+
+     <tr>
+  <td>THM</td>
+  <td>
+    <div class="form-check form-switch">
+      <input class="form-check-input"
+             type="checkbox"
+             >
+    </div>
+  </td>
+</tr>
+
+
+
+  
+        <tr>
+      <td>--</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr>
+        <tr>
+      <td>--</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr>
+        <tr>
+      <td>--</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Commandes satellite</div>
+                  </div>
+                  <div class="card-body">
+                   <table class="table table-hover table-scroll">
+  <thead>
+    <tr>
+      <th scope="col">Système</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+ 
+
+    <tr>
+      <td>ADCS</td>
+      <td>
+        <button class="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#adcsModal">
+            Configure
+          </button>
+      </td>
+    </tr>
+   <tr>
+      <td>--</td>
+      <td>
+        <button class="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#adcsModal">
+            Configure
+          </button>
+      </td>
+    </tr>
+       <tr>
+      <td>--</td>
+      <td>
+        <button class="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#adcsModal">
+            Configure
+          </button>
+      </td>
+    </tr>
+    <!-- <tr>
+      <td>THM</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr> -->
+    
+    <script>let adcsModal;
+
+document.addEventListener("DOMContentLoaded", () => {
+  adcsModal = new bootstrap.Modal(document.getElementById("adcsModal"));
+});
+
+function openADCS(el) {
+  if (el.checked) {
+    document.getElementById("speedInput").value = "";
+    document.getElementById("errorText").style.display = "none";
+    adcsModal.show();
+  }
+}
+
+function validateSpeed() {
+  const val = parseFloat(document.getElementById("speedInput").value);
+  const error = document.getElementById("errorText");
+
+  if (isNaN(val) || val < 0 || val > 100) {
+    error.style.display = "block";
+    return false;
+  } else {
+    error.style.display = "none";
+    return true;
+  }
+}
+
+function sendADCS() {
+
+  const val = parseFloat(document.getElementById("speedInput").value);
+
+  if (isNaN(val) || val < 0 || val > 100) {
+    document.getElementById("errorText").style.display = "block";
+    return;
+  }
+
+  console.log("COMMANDE ADCS ENVOYÉE :", {
+    systeme: "ADCS",
+    vitesse: val
+  });
+
+  adcsModal.hide();
+
+  alert("✔ ADCS activé avec une vitesse de " + val + "%");
+}</script>
+     <tr>
+  <td>ADCS</td>
+  <td>
+    <div class="form-check form-switch">
+      <input class="form-check-input"
+             type="checkbox"
+             onchange="openADCS(this)">
+    </div>
+  </td>
+</tr>
+
+
+
+   <div class="modal fade" id="adcsModal" tabindex="-1">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Commande ADCS</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">
+          Vitesse de rotation (% Vmax)
+        </label>
+
+        <input id="speedInput"
+               type="number"
+               class="form-control"
+               placeholder="Entrez une valeur entre 0 et 100"
+               oninput="validateSpeed()">
+
+        <!-- helper text -->
+        <small id="helperText" class="text-muted">
+          Valeur autorisée : 0% à 100%
+        </small>
+
+        <!-- error message -->
+        <div id="errorText" class="text-danger mt-2" style="display:none;">
+          Valeur invalide ! Veuillez entrer un nombre entre 0 et 100.
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Annuler
+        </button>
+        <button class="btn btn-success" onclick="sendADCS()">
+          Envoyer la commande
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+        <tr>
+      <td>--</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr>
+        <tr>
+      <td>--</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr>
+        <tr>
+      <td>--</td>
+      <td>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" checked>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+                  </div>
+                </div>
+                <!-- end Instruments STATUT -->
+                 <!-- tableau 2 -->
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Flux camera</div>
+                  </div>
+                  <div class="card-body">
+
+
+  <div class="mb-3">
+    <label for="esp32IpInput" class="form-label me-2">ESP32 IP :</label>
+    <input id="esp32IpInput" type="text" class="form-control form-control-sm d-inline-block" style="width:220px;" placeholder="192.168.4.1" />
+    <button id="esp32IpSave" class="btn btn-primary btn-sm ms-2" onclick="saveEsp32Ip()">Enregistrer</button>
+  </div>
+
+  <div class="mb-3">
+    <button id="captureButton" class="btn btn-success btn-sm" onclick="captureImage()">
+      Capturer l'image
+    </button>
+    <span id="captureStatus" class="ms-3 text-muted"></span>
+  </div>
+
+  <div class="text-center mb-3">
+    <img id="capturedImage" src="" alt="Image ESP32 capturée" style="max-width:100%; border-radius:10px; display:none; cursor:pointer;" onclick="showInMainArea(this.src)" />
+  </div>
+
+  <!-- Container vidéo LIVE -->
+  <div style="position:relative; width:100%;">
+
+    <!-- Badge LIVE -->
+    <div style="
+        position:absolute;
+        top:10px;
+        left:10px;
+        background:red;
+        color:white;
+        padding:5px 10px;
+        font-weight:bold;
+        border-radius:5px;
+        font-size:12px;
+        z-index:10;
+    ">
+      LIVE
+    </div>
+
+    <!-- Vidéo style LIVE -->
+    <video id="mainLiveVideo"
+      width="100%"
+      autoplay
+      muted
+      playsinline
+      loop
+      style="border-radius:10px;"
+    >
+      <source src="static/assets/img/Livevideo.mp4" type="video/mp4">
+      Votre navigateur ne supporte pas la vidéo.
+    </video>
+    <!-- Image principale (remplace la vidéo quand visible) -->
+    <img id="mainCapturedImage" src="" alt="Captured main" style="display:none; width:100%; border-radius:10px; cursor:pointer;" onclick="hideMainImage()">
+
+  </div>
+
+</div>
+                
+             
+                </div>
+                <!-- end tableau 2 -->
+                 <!-- tableau 3 -->
+          <!-- <div class="card">
+  <div class="card-header">
+    <div class="card-title">Position du Satellite</div>
+  </div>
+
+
+ <div class="card-body">
+
+ <div class="sat-dashboard">
+
+  
+  <div class="sat-info">
+
+    <div class="coord-item">
+      <span class="label">Latitude</span>
+      <span class="value" id="latitude">--</span>
+    </div>
+
+    <div class="coord-item">
+      <span class="label">Longitude</span>
+      <span class="value" id="longitude">--</span>
+    </div>
+
+  </div>
+
+ 
+  <div class="sat-map">
+    <img src="{{ url_for('static', filename='assets/img/satellite.png') }}">
+  </div>
+
+</div>
+
+</div>
+</div> -->
+                <!-- end tableau 3 -->
+              </div>
+              <!-- end partie 2 -->
+                <!-- start partie 3 -->
+              <div class="col-md-4">
+                <!-- terminal -->
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Logs de la derniere reponse de commandes </div>
+                  </div>
+                  <div class="card-body">
+                     <div id="terminal" style="
+        background-color:#000;
+        color:#00ff00;
+        padding:15px;
+        border-radius:5px;
+        font-family:monospace;
+        height:350px;
+        overflow-y:auto;
+        white-space:pre-wrap; ">
+          Logs / Réponses ESP32
+    </div>
+                  </div>
+                </div>
+                <!-- end terminal -->
+                
+  <div class="card">
+  <div class="card-header">
+    <div class="card-title">LOGS (DERNIERS ÉVÉNEMENTS)</div>
+  </div>
+
+  <div class="card-body">
+
+   <div id="logsContainer"
+  style="
+    background:#0b1220;
+    padding:15px;
+    border-radius:8px;
+    max-height:320px;
+    overflow-y:auto;
+    font-family:Arial;
+    color:white;
+  ">
+</div>
+
+  </div>
+  <script>
+function updateTimeline(status) {
+
+  document.querySelectorAll(".item").forEach(item => {
+    item.classList.remove("active");
+  });
+
+  const current = document.getElementById("step-" + status);
+
+  if (current) {
+    current.classList.add("active");
+  }
+}
+
+setInterval(() => {
+
+  fetch("/status")
+    .then(res => res.json())
+    .then(data => {
+
+      updateTimeline(data.status);
+
+    });
+
+}, 2000);
+
+function captureImage() {
+  const button = document.getElementById("captureButton");
+  const status = document.getElementById("captureStatus");
+  const image = document.getElementById("capturedImage");
+
+  button.disabled = true;
+  status.textContent = "Capture en cours...";
+
+  fetch("/capture")
+    .then(response => response.json())
+    .then(data => {
+      button.disabled = false;
+
+      if (data.saved_image) {
+        const imageUrl = data.image_url || `/static/img/esp32/${data.saved_image}`;
+        image.src = imageUrl;
+        image.style.display = "block";
+        showInMainArea(imageUrl);
+        status.textContent = `Image récupérée et enregistrée. ESP32=${data.ip || 'inconnue'}`;
+      } else {
+        const errorDetail = data.error ? ` (${data.error})` : '';
+        const urls = data.attempted_urls ? ` Tentatives: ${data.attempted_urls.join(', ')}` : '';
+        status.textContent = `${data.message || 'Aucune image reçue.'}${errorDetail}${urls}`;
+      }
+    })
+    .catch(error => {
+      button.disabled = false;
+      status.textContent = `Erreur lors de la capture: ${error.message || error}`;
+      console.error("Capture error:", error);
+    });
+}
+
+function loadEsp32Ip() {
+  fetch('/esp32_ip')
+    .then(response => response.json())
+    .then(data => {
+      const input = document.getElementById('esp32IpInput');
+      if (input && data.ip) {
+        input.value = data.ip;
+      }
+    })
+    .catch(err => console.warn('Impossible de charger l IP ESP32', err));
+}
+
+function saveEsp32Ip() {
+  const input = document.getElementById('esp32IpInput');
+  const status = document.getElementById('captureStatus');
+  if (!input) return;
+
+  const ip = input.value.trim();
+  if (!ip) {
+    status.textContent = 'Saisissez une IP ESP32 valide.';
+    return;
+  }
+
+  fetch('/esp32_ip', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ip })
+  })
+    .then(response => response.json())
+    .then(data => {
+      status.textContent = data.message || 'IP enregistrée.';
+    })
+    .catch(err => {
+      status.textContent = 'Erreur lors de l enregistrement de l IP.';
+      console.error('ESP32 IP save error:', err);
+    });
+}
+
+function showInMainArea(src) {
+  if (!src) return;
+  const mainImg = document.getElementById('mainCapturedImage');
+  const video = document.getElementById('mainLiveVideo');
+  if (mainImg && video) {
+    mainImg.src = src;
+    mainImg.style.display = 'block';
+    video.style.display = 'none';
+  }
+}
+
+function hideMainImage() {
+  const mainImg = document.getElementById('mainCapturedImage');
+  const video = document.getElementById('mainLiveVideo');
+  if (mainImg && video) {
+    mainImg.style.display = 'none';
+    video.style.display = '';
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadEsp32Ip();
+});
+</script>
+</div>
+                   <div class="card">
+  <div class="card-header">
+    <div class="card-title">Position du Satellite</div>
+  </div>
+
+<!-- Image Satellite -->
+ <div class="card-body">
+
+ <div class="sat-dashboard">
+
+  <!-- LEFT INFO -->
+  <div class="sat-info">
+
+    <div class="coord-item">
+      <span class="label">Latitude</span>
+      <span class="value" id="latitude">--</span>
+    </div>
+
+    <div class="coord-item">
+      <span class="label">Longitude</span>
+      <span class="value" id="longitude">--</span>
+    </div>
+
+  </div>
+
+  <!-- RIGHT MAP -->
+  <div class="sat-map">
+    <img src="{{ url_for('static', filename='assets/img/satellite.png') }}">
+  </div>
+
+</div>
+
+</div>
+</div>
+              </div>
+               <!-- end partie 3 -->
+            </div>
+          </div>
+        </div>
+       
+
+
+<script>
+
+
+
+
+
+
+function addTerminalLine(command, response, status, color="#00ff00") {
+
+    let terminal = document.getElementById("terminal");
+
+    let now = new Date();
+    let time = now.toLocaleTimeString('fr-FR');
+
+terminal.innerHTML = `
+<div style="font-family:monospace; line-height:1.2; margin:0; padding:5px;">
+
+<div><b>Cmd:</b> ${command} <span style="float:right;">${time}</span></div>
+
+<div><b>Rep:</b> ${response}</div>
+
+<div><b>Stat:</b> ${status}</div>
+
+<hr style="border:0;border-top:1px solid #333;margin:4px 0;">
+
+</div>
+`;
+    
+}
+
+async function toggleCamera(el) {
+  if (el.checked) {
+    const ok = await cameraOn();
+    if (!ok) el.checked = false; // rollback si erreur
+  } else {
+    const ok = await camOff();
+    if (!ok) el.checked = true; // rollback si erreur
+  }
+
+  updateCameraColor();
+}
+
+// test 3
+
+function addHistoryLog(type, message) {
+
+    let container = document.getElementById("logsContainer");
+
+    let now = new Date();
+    let time = now.toLocaleTimeString('fr-FR');
+
+    let badgeColor = "#1e90ff";
+
+    if(type === "CMD")
+        badgeColor = "#7b5cff";
+
+    if(type === "WARN")
+        badgeColor = "#f1c40f";
+
+    if(type === "ERROR")
+        badgeColor = "red";
+
+    container.innerHTML += `
+        <div style="display:flex;align-items:center;margin-bottom:6px;">
+
+            <span style="width:80px;color:#b0b0b0;font-size:12px;">
+                ${time}
+            </span>
+
+            <span style="
+                background:${badgeColor};
+                color:white;
+                padding:2px 6px;
+                border-radius:3px;
+                font-size:10px;
+                margin-right:8px;
+            ">
+                ${type}
+            </span>
+
+            <span style="color:#cfd8dc;">
+                ${message}
+            </span>
+
+        </div>
+    `;
+
+    container.scrollTop = container.scrollHeight;
+}
+
+
+// Envoie une commande générique par son identifiant (défini dans satellites.json) au satellite actif
+async function sendCommand(id) {
+  try {
+    const response = await fetch('/send_command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    const data = await response.json();
+
+    if (data.error) {
+      addTerminalLine(id, data.error, "FAIL");
+      addHistoryLog("ERROR", `${id} - FAIL`);
+      return false;
+    }
+
+    addTerminalLine(id, data.trame, "SUCCESS");
+    addHistoryLog("CMD", `Commande ${id} envoyée`);
+    return true;
+
+  } catch (error) {
+    addTerminalLine(id, "Erreur réseau", "FAIL");
+    addHistoryLog("ERROR", `${id} - FAIL`);
+    return false;
+  }
+}
+
+async function cameraOn() {
+  return sendCommand("CAM_ON");
+}
+async function camOff() {
+  return sendCommand("CAM_OFF");
+}
+async function updatePosition() {
+
+  try {
+
+    const response = await fetch("/position");
+    const data = await response.json();
+
+        const latitudeEl = document.getElementById("latitude");
+        const longitudeEl = document.getElementById("longitude");
+
+        if (latitudeEl) {
+          latitudeEl.textContent = data && data.latitude !== undefined ? data.latitude : "--";
+        }
+
+        if (longitudeEl) {
+          longitudeEl.textContent = data && data.longitude !== undefined ? data.longitude : "--";
+        }
+updatePosition();
+</script>
+                  </div>
+                </div>
+               
+          </div>
+        </div>
+
+       
+      </div>
+
+      <!-- Custom template | don't include it in your project! -->
+     
+      <!-- End Custom template -->
+    </div>
+    <!--   Core JS Files   -->
+    <script src="static/assets/js/core/jquery-3.7.1.min.js"></script>
+    <script src="static/assets/js/core/popper.min.js"></script>
+    <script src="static/assets/js/core/bootstrap.min.js"></script>
+
+    <!-- jQuery Scrollbar -->
+    <script src="static/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+
+    <!-- Chart JS -->
+    <script src="static/assets/js/plugin/chart.js/chart.min.js"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="static/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+
+    <!-- Chart Circle -->
+    <script src="static/assets/js/plugin/chart-circle/circles.min.js"></script>
+
+    <!-- Datatables -->
+    <script src="static/assets/js/plugin/datatables/datatables.min.js"></script>
+
+    <!-- Bootstrap Notify -->
+    <script src="static/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+
+    <!-- jQuery Vector Maps -->
+    <script src="static/assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+    <script src="static/assets/js/plugin/jsvectormap/world.js"></script>
+
+    <!-- Sweet Alert -->
+    <script src="static/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+
+    <!-- Kaiadmin JS -->
+    <script src="static/assets/js/kaiadmin.min.js"></script>
+
+    <!-- Kaiadmin DEMO methods, don't include it in your project! -->
+    <script src="static/assets/js/setting-demo.js"></script>
+    <script src="static/assets/js/demo.js"></script>
+    <script>
+      $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#177dff",
+        fillColor: "rgba(23, 125, 255, 0.14)",
+      });
+
+      $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#f3545d",
+        fillColor: "rgba(243, 84, 93, .14)",
+      });
+
+      $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#ffa534",
+        fillColor: "rgba(255, 165, 52, .14)",
+      });
+    </script>
+  </body>
+</html>
+

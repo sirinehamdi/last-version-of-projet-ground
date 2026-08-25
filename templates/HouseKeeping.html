@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- <title>Kaiadmin - Bootstrap 5 Admin Dashboard</title> -->
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+    <link rel="icon" href="static/assets/img/kaiadmin/favicon.ico" type="image/x-icon" />
+
+    <!-- Fonts and icons -->
+    <script src="static/assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+            google: { families: ["Public Sans:300,400,500,600,700"] },
+            custom: {
+                families: [
+                    "Font Awesome 5 Solid",
+                    "Font Awesome 5 Regular",
+                    "Font Awesome 5 Brands",
+                    "simple-line-icons",
+                ],
+                urls: ["static/assets/css/fonts.min.css"],
+            },
+            active: function () {
+                sessionStorage.fonts = true;
+            },
+        });
+    </script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins.min.css') }}">
+    <link rel="stylesheet" href="    {{ url_for('static', filename='assets/css/kaiadmin.min.css') }}">
+
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link rel="stylesheet" href=" {{ url_for('static', filename='assets/css/demo.css') }}">
+    <style>
+        .form-check-input {
+            background-color: #ccc;
+            border-color: #ccc;
+            transition: 0.3s;
+        }
+
+        .form-check-input:checked {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+        }
+
+        .table-scroll tbody {
+            display: block;
+            max-height: 200px;
+            /* hauteur du scroll */
+            overflow-y: auto;
+        }
+
+        .table-scroll thead,
+        .table-scroll tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .main-header,
+        .main-panel {
+            width: 100% !important;
+        }
+
+        .main-header {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+
+        .main-panel {
+            float: none !important;
+            padding-top: 70px !important;
+        }
+
+        .wrapper {
+            width: 100% !important;
+        }
+
+        .sat-dashboard {
+            display: flex;
+            gap: 20px;
+            background: #0b1220;
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+        }
+
+        .sat-info {
+            width: 200px;
+        }
+
+        .coord-item {
+            background: #111a2e;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+
+        .sat-map img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+        }
+        .topbar-nav .nav-link {
+            color: #000 !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+            background-color: transparent !important;
+        }
+        .topbar-nav .nav-link:hover,
+        .topbar-nav .nav-link:focus {
+            color: #d32f2f !important;
+            text-decoration: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+        .topbar-nav .nav-link.active {
+            color: #d32f2f !important;
+            text-decoration: none !important;
+        }
+
+        .hk-parameters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .hk-parameter-card {
+            --parameter-accent: #177dff;
+            min-height: 178px;
+            margin: 0;
+            overflow: hidden;
+            border: 1px solid #e6edf5;
+            border-radius: 8px;
+            box-shadow: 0 8px 20px rgba(31, 41, 55, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hk-parameter-card:hover {
+            box-shadow: 0 12px 26px rgba(31, 41, 55, 0.14);
+            transform: translateY(-3px);
+        }
+
+        .hk-parameter-card::before {
+            display: block;
+            width: 100%;
+            height: 5px;
+            background: var(--parameter-accent);
+            content: "";
+        }
+
+        .hk-parameter-card .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 173px;
+            padding: 17px 18px 16px;
+        }
+
+        .hk-parameter-header,
+        .hk-parameter-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .hk-live-indicator {
+            color: #7b8794;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        .hk-live-indicator::before {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            margin-right: 5px;
+            border-radius: 50%;
+            background: #2fb344;
+            content: "";
+        }
+
+        .hk-parameter-name {
+            margin: 0;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0;
+            overflow-wrap: anywhere;
+            text-transform: uppercase;
+        }
+
+        .hk-parameter-value {
+            margin: 12px 0;
+            color: #202b3c;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1.15;
+            overflow-wrap: anywhere;
+        }
+
+        .hk-parameter-footer {
+            color: #8b96a5;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .hk-empty-state {
+            grid-column: 1 / -1;
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .hk-charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+            gap: 18px;
+        }
+
+        .hk-chart-card {
+            margin: 0;
+            border-radius: 8px;
+        }
+
+        .hk-chart-card .card-header {
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .hk-chart-container {
+            height: 375px;
+        }
+
+        .hk-chart-filter {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .hk-chart-filter .form-control {
+            width: min(280px, 46vw);
+            min-height: 36px;
+            border: 1px solid #d9e1eb;
+            border-radius: 6px;
+            background: #f8fafc;
+            color: #263445;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .hk-chart-filter .form-control:focus {
+            border-color: #177dff;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(23, 125, 255, 0.14);
+        }
+
+        @media (max-width: 576px) {
+            .hk-chart-filter {
+                align-items: flex-start;
+                flex-direction: column;
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .hk-chart-filter .form-control {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- navbar-->
+        <div class="main-panel">
+            <div class="main-header">
+
+                <!-- Navbar Header -->
+                <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+                    <div class="container-fluid">
+                        <nav
+                            class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button type="submit" class="btn btn-search pe-1">
+                                        <i class="fa fa-search search-icon"></i>
+                                    </button>
+                                </div>
+                                <input type="text" placeholder="Search ..." class="form-control" />
+                            </div>
+                        </nav>
+
+                        <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                              <li class="nav-item">
+                                <a class="nav-link active text-dark" href="/HK">HK</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/payload">Payload</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/tracking">Tracking</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link  text-dark" href="/cmd" style="font-weight:600;">CMD</a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center ms-4 me-3">
+                                <img src="/static/assets/img/Logo_CSU_full_color_96dpi.png" alt="CSU logo" style="height:40px; max-height:40px;" class="me-2" />
+                                <img src="/static/assets/img/UPEC_rvb.png" alt="UPEC logo" style="height:40px; max-height:40px;" />
+                            </li>
+                          
+                            <li class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                                    aria-expanded="false" aria-haspopup="true">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-search animated fadeIn">
+                                    <form class="navbar-left navbar-form nav-search">
+                                        <div class="input-group">
+                                            <input type="text" placeholder="Search ..." class="form-control" />
+                                        </div>
+                                    </form>
+                                </ul>
+                            </li>
+               
+
+                         
+                        </ul>
+                    </div>
+                </nav>
+                <!-- End Navbar -->
+            </div>
+            <!-- end navbar -->
+
+
+            <div>
+                <div class="page-inner">
+                    <div class="page-header">
+                        
+                        <ul class="breadcrumbs mb-3">
+                            <li class="nav-home">
+                                <a href="#">
+                                    <i class="icon-home"></i>
+                                </a>
+                            </li>
+                            <li class="separator">
+                                <i class="icon-arrow-right"></i>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#">HouseKeeping</a>
+                            </li>
+                            <li class="separator">
+                                <i class="icon-arrow-right"></i>
+                            </li>
+                          
+                        </ul>
+                        <div class="ms-auto" style="min-width: 240px;">
+                            <label class="form-label mb-1" for="satelliteSelect">Satellite</label>
+                            <select class="form-select form-select-sm" id="satelliteSelect" name="satellite">
+                                <option value="" {% if not active_satellite %}selected{% endif %} disabled>Selectionner un satellite</option>
+                                {% for satellite in satellites %}
+                                <option value="{{ satellite.key }}" {% if satellite.key == active_satellite %}selected{% endif %}>{{ satellite.name }}</option>
+                                {% else %}
+                                <option value="" disabled>Aucun profil disponible</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Parametres actuels</div>
+                        </div>
+                        <div class="card-body">
+                            <div id="hkParametersGrid" class="hk-parameters-grid" aria-live="polite">
+                                <p class="hk-empty-state">En attente des donnees de telemetrie.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-head-row">
+                                <div class="card-title">Graphiques des parametres</div>
+                                <div class="hk-chart-filter">
+                                    <input id="hkChartFilter" class="form-control form-control-sm" type="text"
+                                        value="all" placeholder="all ou temp,bat,press"
+                                        aria-label="Filtrer les graphiques par parametre">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="hkChartsGrid" class="hk-charts-grid" aria-live="polite">
+                                <p class="hk-empty-state">Les graphiques apparaitront automatiquement a la reception des parametres.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <script>
+
+
+
+
+
+
+           
+
+                document.getElementById("satelliteSelect").addEventListener("change", async function () {
+                    const response = await fetch("/satellite/switch", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ satellite: this.value })
+                    });
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        addTerminalLine("PROFIL", data.message, "ACTIF");
+                    } else {
+                        addTerminalLine("PROFIL", data.error || "Erreur", "ECHEC");
+                    }
+                });
+
+                const parametersGrid = document.getElementById("hkParametersGrid");
+                const chartsGrid = document.getElementById("hkChartsGrid");
+                const chartFilter = document.getElementById("hkChartFilter");
+                const automaticCharts = new Map();
+                let chartsLibraryReady = false;
+                let latestTelemetryData = null;
+
+                function formatParameterValue(value) {
+                    if (value === null || value === undefined || value === "") {
+                        return "--";
+                    }
+
+                    if (typeof value === "number") {
+                        return Number.isInteger(value) ? String(value) : value.toFixed(2);
+                    }
+
+                    return String(value);
+                }
+
+                function getParameterPresentation(name) {
+                    const normalizedName = name.toLowerCase();
+
+                    if (normalizedName.includes("temp")) {
+                        return { accent: "#e55353" };
+                    }
+                    if (normalizedName.includes("bat") || normalizedName.includes("volt")) {
+                        return { accent: "#f59f00" };
+                    }
+                    if (normalizedName.includes("current") || normalizedName.includes("courant")) {
+                        return { accent: "#7048e8" };
+                    }
+                    if (normalizedName.includes("status") || normalizedName.includes("state")) {
+                        return { accent: "#2fb344" };
+                    }
+                    if (normalizedName.includes("press")) {
+                        return { accent: "#1098ad" };
+                    }
+
+                    return { accent: "#177dff" };
+                }
+
+                function isAutomaticChartParameter(name, values) {
+                    return name.toLowerCase() !== "time"
+                        && Array.isArray(values)
+                        && values.some((value) => Number.isFinite(Number(value)));
+                }
+
+                function getSelectedChartParameters() {
+                    const filterValue = chartFilter.value.trim().toLowerCase();
+                    if (!filterValue || filterValue === "all") return null;
+
+                    return new Set(
+                        filterValue.split(/[;,]/)
+                            .map((name) => name.trim())
+                            .filter(Boolean)
+                    );
+                }
+
+                function createAutomaticChart(name) {
+                    const presentation = getParameterPresentation(name);
+                    const chartCard = document.createElement("article");
+                    const cardHeader = document.createElement("div");
+                    const chartTitle = document.createElement("div");
+                    const cardBody = document.createElement("div");
+                    const chartContainer = document.createElement("div");
+                    const canvas = document.createElement("canvas");
+
+                    chartCard.className = "card hk-chart-card";
+                    cardHeader.className = "card-header";
+                    chartTitle.className = "card-title";
+                    cardBody.className = "card-body";
+                    chartContainer.className = "hk-chart-container";
+                    chartTitle.textContent = name;
+
+                    chartContainer.appendChild(canvas);
+                    cardHeader.appendChild(chartTitle);
+                    cardBody.appendChild(chartContainer);
+                    chartCard.append(cardHeader, cardBody);
+                    chartsGrid.appendChild(chartCard);
+
+                    const chart = new Chart(canvas.getContext("2d"), {
+                        type: "line",
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: name,
+                                data: [],
+                                borderColor: presentation.accent,
+                                borderWidth: 2,
+                                fill: false,
+                                pointRadius: 0,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { ticks: { maxTicksLimit: 5 } },
+                                y: { beginAtZero: false }
+                            }
+                        }
+                    });
+
+                    automaticCharts.set(name, { chart, chartCard });
+                    return chart;
+                }
+
+                function renderAutomaticCharts(data) {
+                    if (!chartsLibraryReady || !window.Chart) return;
+
+                    const timeValues = Array.isArray(data?.time) ? data.time : [];
+                    const selectedParameters = getSelectedChartParameters();
+                    const chartParameterNames = Object.keys(data || {}).filter((name) =>
+                        isAutomaticChartParameter(name, data[name])
+                        && (!selectedParameters || selectedParameters.has(name.toLowerCase()))
+                    );
+
+                    automaticCharts.forEach(({ chart, chartCard }, name) => {
+                        if (!chartParameterNames.includes(name)) {
+                            chart.destroy();
+                            chartCard.remove();
+                            automaticCharts.delete(name);
+                        }
+                    });
+
+                    if (!chartParameterNames.length) {
+                        if (!chartsGrid.children.length) {
+                            chartsGrid.innerHTML = '<p class="hk-empty-state">Les graphiques apparaitront automatiquement a la reception des parametres.</p>';
+                        }
+                        return;
+                    }
+
+                    const emptyState = chartsGrid.querySelector(".hk-empty-state");
+                    if (emptyState) emptyState.remove();
+
+                    chartParameterNames.sort().forEach((name) => {
+                        const numericValues = data[name]
+                            .map(Number)
+                            .filter((value) => Number.isFinite(value))
+                            .slice(-20);
+                        const chart = automaticCharts.get(name)?.chart || createAutomaticChart(name);
+
+                        chart.data.labels = timeValues.slice(-numericValues.length);
+                        chart.data.datasets[0].data = numericValues;
+                        chart.update();
+                    });
+                }
+
+                function renderParameters(data) {
+                    const parameterNames = Object.keys(data || {}).filter((name) => name.toLowerCase() !== "time");
+                    parametersGrid.replaceChildren();
+
+                    if (!parameterNames.length) {
+                        const emptyState = document.createElement("p");
+                        emptyState.className = "hk-empty-state";
+                        emptyState.textContent = "En attente des donnees de telemetrie.";
+                        parametersGrid.appendChild(emptyState);
+                        return;
+                    }
+
+                    parameterNames.sort().forEach((name) => {
+                        const values = Array.isArray(data[name]) ? data[name] : [];
+                        const latestValue = values.length ? values[values.length - 1] : null;
+                        const presentation = getParameterPresentation(name);
+                        const parameterCard = document.createElement("article");
+                        const cardBody = document.createElement("div");
+                        const header = document.createElement("div");
+                        const liveIndicator = document.createElement("span");
+                        const parameterName = document.createElement("p");
+                        const parameterValue = document.createElement("p");
+                        const footer = document.createElement("div");
+                        const footerLabel = document.createElement("span");
+
+                        parameterCard.className = "card hk-parameter-card";
+                        cardBody.className = "card-body";
+                        header.className = "hk-parameter-header";
+                        liveIndicator.className = "hk-live-indicator";
+                        parameterName.className = "hk-parameter-name";
+                        parameterValue.className = "hk-parameter-value";
+                        footer.className = "hk-parameter-footer";
+                        parameterCard.style.setProperty("--parameter-accent", presentation.accent);
+                        liveIndicator.textContent = "LIVE";
+                        parameterName.textContent = name;
+                        parameterValue.textContent = formatParameterValue(latestValue);
+                        footerLabel.textContent = "Derniere mesure";
+
+                        header.appendChild(liveIndicator);
+                        footer.appendChild(footerLabel);
+                        cardBody.append(header, parameterName, parameterValue, footer);
+                        parameterCard.appendChild(cardBody);
+                        parametersGrid.appendChild(parameterCard);
+                    });
+                }
+
+                async function updateParameters() {
+                    try {
+                        const response = await fetch("/data");
+                        if (!response.ok) return;
+                        const data = await response.json();
+                        latestTelemetryData = data;
+                        renderParameters(data);
+                        renderAutomaticCharts(data);
+                    } catch (error) {
+                        console.warn("Parameters update failed:", error);
+                    }
+                }
+
+                window.addEventListener("load", () => {
+                    chartsLibraryReady = true;
+                    updateParameters();
+                });
+                chartFilter.addEventListener("change", () => renderAutomaticCharts(latestTelemetryData));
+                chartFilter.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        renderAutomaticCharts(latestTelemetryData);
+                    }
+                });
+                updateParameters();
+                setInterval(updateParameters, 1000);
+
+            </script>
+        </div>
+    </div>
+
+    </div>
+    </div>
+
+
+    </div>
+
+    <!-- Custom template | don't include it in your project! -->
+
+    <!-- End Custom template -->
+    </div>
+    <!--   Core JS Files   -->
+    <script src="static/assets/js/core/jquery-3.7.1.min.js"></script>
+    <script src="static/assets/js/core/popper.min.js"></script>
+    <script src="static/assets/js/core/bootstrap.min.js"></script>
+
+    <!-- jQuery Scrollbar -->
+    <script src="static/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+
+    <!-- Chart JS -->
+    <script src="static/assets/js/plugin/chart.js/chart.min.js"></script>
+
+    <!-- jQuery Sparkline -->
+    <script src="static/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+
+    <!-- Chart Circle -->
+    <script src="static/assets/js/plugin/chart-circle/circles.min.js"></script>
+
+    <!-- Datatables -->
+    <script src="static/assets/js/plugin/datatables/datatables.min.js"></script>
+
+    <!-- Bootstrap Notify -->
+    <script src="static/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+
+    <!-- jQuery Vector Maps -->
+    <script src="static/assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+    <script src="static/assets/js/plugin/jsvectormap/world.js"></script>
+
+    <!-- Sweet Alert -->
+    <script src="static/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+
+    <!-- Kaiadmin JS -->
+    <script src="static/assets/js/kaiadmin.min.js"></script>
+
+    <!-- Kaiadmin DEMO methods, don't include it in your project! -->
+    <script src="static/assets/js/setting-demo.js"></script>
+    <script src="static/assets/js/demo.js"></script>
+    <script>
+        $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+            type: "line",
+            height: "70",
+            width: "100%",
+            lineWidth: "2",
+            lineColor: "#177dff",
+            fillColor: "rgba(23, 125, 255, 0.14)",
+        });
+
+        $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+            type: "line",
+            height: "70",
+            width: "100%",
+            lineWidth: "2",
+            lineColor: "#f3545d",
+            fillColor: "rgba(243, 84, 93, .14)",
+        });
+
+        $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+            type: "line",
+            height: "70",
+            width: "100%",
+            lineWidth: "2",
+            lineColor: "#ffa534",
+            fillColor: "rgba(255, 165, 52, .14)",
+        });
+    </script>
+</body>
+
+</html>
