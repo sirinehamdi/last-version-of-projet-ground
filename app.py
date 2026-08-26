@@ -34,22 +34,22 @@ satellite_data_history = deque(maxlen=200)
 
 
 def get_active_satellite():
-    """Retourne le profil sélectionné dans Housekeeping."""
+    """Returns the profile selected in Housekeeping."""
     profiles = load_satellite_profiles()
     if not profiles:
-        raise RuntimeError("Aucun profil satellite n'est défini")
+        raise RuntimeError("No satellite profile is defined")
 
     if active_satellite_key is None:
-        raise RuntimeError("Sélectionnez un satellite dans Housekeeping avant d'envoyer une commande")
+        raise RuntimeError("Select a satellite in Housekeeping before sending a command")
 
     profile = profiles.get(active_satellite_key)
     if profile is None:
-        raise RuntimeError(f"Profil satellite introuvable : {active_satellite_key}")
+        raise RuntimeError(f"Satellite profile not found: {active_satellite_key}")
     return profile
 
 
 def configure_selected_communication(profile):
-    """Ouvre le port série du profil choisi; aucun port n'est ouvert au démarrage."""
+    """Opens the serial port of the chosen profile; no port is opened at startup."""
     global radio, radio_thread
 
     if radio is not None:
@@ -61,7 +61,7 @@ def configure_selected_communication(profile):
 
     communication = profile.communication
     if not communication.port or not communication.baudrate:
-        raise RuntimeError("Le profil série doit définir port et baudrate")
+        raise RuntimeError("The serial profile must define port and baudrate")
 
     radio = serial.Serial(
         communication.port,
@@ -77,16 +77,16 @@ def configure_selected_communication(profile):
 
 
 def get_active_wifi_communication():
-    """Retourne la configuration WiFi du profil sélectionné."""
+    """Returns the WiFi configuration of the selected profile."""
     profile = get_active_satellite()
     communication = profile.communication
     if communication.type != "wifi" or not communication.host:
-        raise RuntimeError("Le profil sélectionné ne définit pas de connexion WiFi")
+        raise RuntimeError("The selected profile does not define a WiFi connection")
     return communication
 
 
 def send_tc(command, cmd_id="101", seq="000"):
-    """Envoie une commande, en série si disponible, sinon en WiFi HTTP."""
+    """Sends a command, over serial if available, otherwise over WiFi HTTP."""
     profile = get_active_satellite()
     communication = profile.communication
     decoder = profile.decoder
@@ -100,16 +100,16 @@ def send_tc(command, cmd_id="101", seq="000"):
         if "off_id" in entry:
             valid_ids.add(entry["off_id"].upper())
     if command_name not in valid_ids:
-        raise RuntimeError(f"Commande inconnue pour le profil {profile.name}: {command_name}")
+        raise RuntimeError(f"Unknown command for profile {profile.name}: {command_name}")
     command_to_send = command_name
 
     if communication.type == "serial":
         if radio is None:
-            raise RuntimeError("Aucun port série détecté pour ce profil")
+            raise RuntimeError("No serial port detected for this profile")
         frame = CommandFormatter(decoder).format_command(
             command_to_send, cmd_id, seq
         )
-        print("TC envoyée :", frame)
+        print("TC sent:", frame)
         radio.write(frame.encode())
         store_satellite_frame(frame, frame_type=decoder.telecommand_type, direction="TX")
         return frame
@@ -122,16 +122,16 @@ def send_tc(command, cmd_id="101", seq="000"):
         try:
             response = requests.get(url, timeout=timeout)
             response.raise_for_status()
-            print(f"[AUTO-WIFI] Commande HTTP envoyée: {url}")
+            print(f"[AUTO-WIFI] HTTP command sent: {url}")
             frame = f"HTTP {url}"
             store_satellite_frame(frame, frame_type=decoder.telecommand_type, direction="TX")
             return frame
         except Exception as exc:
             raise RuntimeError(
-                f"Aucun port série détecté et commande WiFi impossible: {exc}"
+                f"No serial port detected and WiFi command failed: {exc}"
             ) from exc
 
-    raise RuntimeError(f"Commande non supportée pour le profil actif: {command_name}")
+    raise RuntimeError(f"Command not supported for the active profile: {command_name}")
 data_store = {
     "time": [],
 }
@@ -215,7 +215,7 @@ def get_toggle_state_key(on_id):
 
 @app.route("/command_state/<on_id>")
 def get_command_state(on_id):
-    """Retourne l'etat d'une commande a deux positions du profil actif."""
+    """Returns the active profile's two-state command status."""
     try:
         profile = get_active_satellite()
     except RuntimeError as error:
@@ -227,7 +227,7 @@ def get_command_state(on_id):
         for entry in profile.available_commands
     )
     if not is_toggle:
-        return jsonify({"error": "Commande a deux positions introuvable"}), 404
+        return jsonify({"error": "Two-state command not found"}), 404
 
     return jsonify({
         "id": normalized_on_id,
@@ -341,7 +341,7 @@ def read_radio():
 
         frame_type = frame_data.get("type") or "UNKNOWN"
         if decoder.is_ack(frame_data):
-            print("ACK reçu :", frame)
+            print("ACK received:", frame)
             store_satellite_frame(frame, frame_type=frame_type)
             continue
 
@@ -493,7 +493,7 @@ def HouseKeeping():
 
 @app.route("/satellite/switch", methods=["POST"])
 def switch_satellite():
-    """Active le profil choisi dans la liste Housekeeping."""
+    """Activates the profile chosen in the Housekeeping list."""
     global active_satellite_key
 
     data = request.get_json(silent=True) or {}
@@ -501,7 +501,7 @@ def switch_satellite():
     profiles = load_satellite_profiles()
     profile = profiles.get(satellite_key)
     if profile is None:
-        return jsonify({"error": "Profil satellite introuvable"}), 400
+        return jsonify({"error": "Satellite profile not found"}), 400
 
     previous_satellite_key = active_satellite_key
     active_satellite_key = satellite_key
@@ -509,7 +509,7 @@ def switch_satellite():
         configure_selected_communication(profile)
     except (serial.SerialException, OSError, RuntimeError) as error:
         active_satellite_key = previous_satellite_key
-        return jsonify({"error": f"Impossible de configurer {profile.name} : {error}"}), 500
+        return jsonify({"error": f"Unable to configure {profile.name}: {error}"}), 500
 
     return jsonify({
         "message": f"Profil actif : {profile.name}",
@@ -521,7 +521,7 @@ def switch_satellite():
 
 @app.route("/commands")
 def get_commands():
-    """Retourne la liste des commandes (id + label) du profil actif, pour affichage dynamique."""
+    """Returns the list of commands (id + label) of the active profile, for dynamic display."""
     try:
         profile = get_active_satellite()
     except RuntimeError as error:
@@ -532,11 +532,11 @@ def get_commands():
 
 @app.route("/send_command", methods=["POST"])
 def send_command():
-    """Envoie une commande générique identifiée par son id, tel que défini dans satellites.json."""
+    """Sends a generic command identified by its id, as defined in satellites.json."""
     data = request.get_json(silent=True) or {}
     command_id = str(data.get("id", "")).strip().upper()
     if not command_id:
-        return jsonify({"error": "Identifiant de commande manquant"}), 400
+        return jsonify({"error": "Missing command identifier"}), 400
 
     try:
         frame = send_tc(command_id)
@@ -558,11 +558,11 @@ def send_command():
 
     logs_history.append({
         "type": "CMD",
-        "message": f"Commande {command_id} envoyée"
+        "message": f"Command {command_id} sent"
     })
 
     return jsonify({
-        "message": f"Commande {command_id} envoyée",
+        "message": f"Command {command_id} sent",
         "trame": frame,
         "id": command_id
     })
@@ -638,7 +638,17 @@ def receive_data():
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
-        return jsonify({"error": "Le corps de la requête doit être un objet JSON"}), 400
+        # Le corps n'est pas du JSON : c'est probablement une trame brute
+        # (ex: "[TM#001#42#57#TEMP=24;BAT=3.79;...#97]") envoyée telle quelle
+        # par l'ESP32 en WiFi, comme en série. On tente donc de la décoder
+        # avec le decoder du profil actif au lieu de rejeter la requête.
+        raw_frame = request.get_data(as_text=True).strip()
+        data = decode_tm(raw_frame)
+        if not isinstance(data, dict):
+            store_satellite_frame(raw_frame, frame_type="RAW")
+            return jsonify({
+                "error": "Invalid request body: neither JSON nor a frame recognized by the active profile"
+            }), 400
 
     # Le dashboard utilise des clés normalisées, quel que soit le satellite.
     data = {
@@ -757,7 +767,7 @@ def receive_data():
         )
 
     print(
-        "Reçu ESP32:",
+        "Received from ESP32:",
         data
     )
 
@@ -871,7 +881,7 @@ def esp32_ip():
         with PROFILES_FILE.open("w", encoding="utf-8") as profiles_file:
             json.dump(profiles, profiles_file, indent=2, ensure_ascii=False)
 
-        return jsonify({"message": "Adresse WiFi mise à jour dans satellites.json.", "ip": new_ip.strip()})
+        return jsonify({"message": "WiFi address updated in satellites.json.", "ip": new_ip.strip()})
     return jsonify({"ip": communication.host})
 
 
