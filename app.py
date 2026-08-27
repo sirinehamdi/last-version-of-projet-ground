@@ -451,7 +451,27 @@ os.makedirs('static', exist_ok=True)
 # ==================================================
 @app.route("/")
 def index():
-    return render_template("index.html")
+    try:
+            profiles = load_satellite_profiles()
+            satellites = [
+                {"key": key, "name": profile.name}
+                for key, profile in profiles.items()
+            ]
+    except (OSError, ValueError, KeyError, TypeError) as error:
+            profiles = {}
+            satellites = []
+            print(f"[CONFIG] Impossible de charger satellites.json: {error}")
+    
+    return render_template(
+            "HouseKeeping.html",
+            satellites=satellites,
+            active_satellite=active_satellite_key,
+            active_satellite_name=(
+                profiles[active_satellite_key].name
+                if active_satellite_key in profiles
+                else None
+            ),
+        )
 
 @app.route("/cmd")
 def cmd():
